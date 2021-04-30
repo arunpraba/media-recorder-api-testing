@@ -1,8 +1,13 @@
 import { useRef, useEffect, useState } from "react";
 import "./styles.css";
 
-const videoType = "video/webm";
-const audioType = "audio/webm";
+let videoType = "video/webm";
+let audioType = "audio/webm";
+
+if (navigator.userAgent.indexOf("Safari") !== -1) {
+  videoType = "video/mp4";
+  audioType = "audio/wav";
+}
 
 export default function App() {
   const streamRef = useRef();
@@ -27,11 +32,12 @@ export default function App() {
 
   const startRecording = async () => {
     try {
+      blobsRef.current = [];
       setIsRecording(true);
       setHistory((prev) => [...prev, `Video Started`]);
       streamRef.current = await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: true
+        video: mimeType === videoType
       });
       setHistory((prev) => [...prev, `Got Media Stream`]);
 
@@ -63,6 +69,8 @@ export default function App() {
 
   const stopRecording = () => {
     counterRef.current = 0;
+    setIsRecording(false);
+
     setHistory((prev) => [...prev, `Stopped recording`]);
     if (mediaRecorderRef.current && mediaRecorderRef.current.stop) {
       mediaRecorderRef.current.stop();
@@ -81,20 +89,19 @@ export default function App() {
   return (
     <div className="App">
       <h1>Media Record Testing</h1>
-      <h2>Start editing to see some magic happen!</h2>
 
       <div>
         <button
           className={mimeType === videoType ? "active-button" : ""}
           disabled={recording}
-          onClick={() => setMimeType("video/webm")}
+          onClick={() => setMimeType(videoType)}
         >
           Video
         </button>
         <button
           className={mimeType === audioType ? "active-button" : ""}
           disabled={recording}
-          onClick={() => setMimeType("audio/webm")}
+          onClick={() => setMimeType(audioType)}
         >
           Audio
         </button>
@@ -108,10 +115,10 @@ export default function App() {
       </div>
 
       {mimeType === videoType ? (
-        <video ref={mediaRef} id="video" autoPlay playsInline muted></video>
+        <video ref={mediaRef} controls autoPlay playsInline></video>
       ) : (
         <div className="audio">
-          <audio ref={mediaRef} id="video" autoPlay playsInline muted></audio>
+          <audio ref={mediaRef} controls autoPlay playsInline></audio>
         </div>
       )}
 
