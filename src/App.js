@@ -6,6 +6,8 @@ let audioType = "audio/webm";
 
 const initialHistory = [`Initialied...`];
 
+console.log(navigator.userAgent);
+
 if (navigator.userAgent.indexOf("Safari") !== -1) {
   videoType = "video/mp4";
   audioType = "audio/mp4";
@@ -24,7 +26,6 @@ export default function App() {
   const preview = () => {
     setIsRecording(false);
     setHistory((prev) => [...prev, `Showing the preview`]);
-
     const blobs = blobsRef.current;
     if (!blobs.length) return;
     mediaRef.current.src = URL.createObjectURL(
@@ -72,7 +73,6 @@ export default function App() {
   const stopRecording = () => {
     counterRef.current = 0;
     setIsRecording(false);
-
     setHistory((prev) => [...prev, `Stopped recording`]);
     if (mediaRecorderRef.current && mediaRecorderRef.current.stop) {
       mediaRecorderRef.current.stop();
@@ -132,8 +132,8 @@ export default function App() {
         </button>
         <code>
           <ol>
-            {history.map((history) => (
-              <li>{history}</li>
+            {history.map((history, index) => (
+              <li key={index}>{history}</li>
             ))}
           </ol>
         </code>
