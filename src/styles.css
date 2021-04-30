@@ -5,8 +5,8 @@ body {
 }
 
 .App {
-  margin: 2rem;
-  padding: 2rem;
+  margin: 1rem;
+  padding: 1rem;
   background: #f4f4f4;
   box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
 }
@@ -37,10 +37,6 @@ button {
 
 button:disabled {
   cursor: no-drop;
-}
-
-.start {
-  margin-left: 1rem;
 }
 
 .start:not(:disabled):hover {

@@ -107,7 +107,6 @@ export default function App() {
         >
           Audio
         </button>
-
         <button className="start" disabled={recording} onClick={startRecording}>
           start
         </button>
