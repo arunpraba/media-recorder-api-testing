@@ -4,9 +4,11 @@ import "./styles.css";
 let videoType = "video/webm";
 let audioType = "audio/webm";
 
+const initialHistory = [`Initialied...`];
+
 if (navigator.userAgent.indexOf("Safari") !== -1) {
   videoType = "video/mp4";
-  audioType = "audio/wav";
+  audioType = "audio/mp4";
 }
 
 export default function App() {
@@ -15,7 +17,7 @@ export default function App() {
   const mediaRecorderRef = useRef([]);
   const mediaRef = useRef(null);
   const counterRef = useRef(0);
-  const [history, setHistory] = useState([`Initialied...`]);
+  const [history, setHistory] = useState(initialHistory);
   const [mimeType, setMimeType] = useState(videoType);
   const [recording, setIsRecording] = useState(false);
 
@@ -123,6 +125,12 @@ export default function App() {
       )}
 
       <div className="console">
+        <button
+          className="clear-icon"
+          onClick={() => setHistory(initialHistory)}
+        >
+          Clear
+        </button>
         <code>
           <ol>
             {history.map((history) => (

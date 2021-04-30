@@ -69,9 +69,20 @@ video {
   border-radius: 4px;
   padding: 5px;
   background: black;
+  position: relative;
   color: #4af626;
 }
 
 li {
   padding: 0.3rem 0;
+}
+
+.clear-icon {
+  position: absolute;
+  padding: 5px;
+  right: 10px;
+  top: 10px;
+  color: red;
+  background: transparent;
+  border: 1px solid red;
 }
