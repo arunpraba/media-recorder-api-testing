@@ -57,11 +57,7 @@ export default function App() {
       mediaRecorderRef.current.onstop = preview;
       mediaRecorderRef.current.start(1000);
     } catch (err) {
-      setHistory((prev) =>
-        [...prev, err.message, `${JSON.stringify(err.stack)}`].filter(
-          (value) => !!value
-        )
-      );
+      setHistory((prev) => [...prev, err.message]);
     }
   };
 
