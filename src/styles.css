@@ -1,0 +1,76 @@
+body {
+  background: lightgreen;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+.App {
+  margin: 2rem;
+  padding: 2rem;
+  background: #f4f4f4;
+  box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+.action {
+  display: flex;
+}
+
+button {
+  padding: 10px;
+  padding: 0.5rem 2rem;
+  background: transparent;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+.active-button {
+  background: lightgreen;
+}
+
+.action button {
+  padding: 10px;
+  padding: 0.5rem 2rem;
+  background: transparent;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: no-drop;
+}
+
+.start {
+  margin-left: 1rem;
+}
+
+.start:not(:disabled):hover {
+  background: lightgreen;
+  transition: background 300ms;
+}
+
+.stop:not(:disabled):hover {
+  background: coral;
+  transition: background 300ms;
+}
+
+video {
+  width: 100%;
+  height: 300px;
+}
+
+.audio {
+  width: 100%;
+  height: 50px;
+}
+
+.console {
+  margin: 2rem 0;
+  border-radius: 4px;
+  padding: 5px;
+  background: black;
+  color: #4af626;
+}
+
+li {
+  padding: 0.3rem 0;
+}
