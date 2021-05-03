@@ -18,7 +18,6 @@ export default function App() {
   const mediaRecorderRef = useRef([]);
   const mediaRef = useRef(null);
   const counterRef = useRef(0);
-  const urlRef = useRef("");
   const [history, setHistory] = useState(initialHistory);
   const [mimeType, setMimeType] = useState(videoType);
   const [recording, setIsRecording] = useState(false);
@@ -83,28 +82,27 @@ export default function App() {
   };
 
   const download = () => {
-    const file = new Blob(this.blobChunks, { type: mimeType });
+    const file = new Blob(blobsRef.current, { type: mimeType });
     console.log(`File`, file);
     setHistory((prev) => [
       ...prev,
       `Downloading file`,
       `File Size: ${file.size}`
     ]);
+    const url = window.URL.createObjectURL(file);
+    const name = `${mimeType.split("/")[0]}.${extension}`;
     const a = document.createElement("a");
     a.style = "display: none";
-    urlRef.current = window.URL.createObjectURL(file);
-    a.href = urlRef.current;
-    a.download = `${mimeType.split("/")[0]}.${extension}`;
+    a.href = url;
+    a.download = name;
     a.click();
     a.remove();
+    window.URL.revokeObjectURL(url);
+    setHistory((prev) => [...prev, `Downloaded: ${name}`]);
   };
 
   useEffect(() => {
     return () => {
-      if (urlRef.current) {
-        URL.revokeObjectURL(urlRef.current);
-        urlRef.current = null;
-      }
       if (mediaRef.current && mediaRef.current.src) {
         URL.revokeObjectURL(mediaRef.current.src);
       }
