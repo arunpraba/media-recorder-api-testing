@@ -27,6 +27,8 @@ export default function App() {
     setHistory((prev) => [...prev, `Showing the preview`]);
     const blobs = blobsRef.current;
     if (!blobs.length) return;
+    mediaRef.current.srcObject = null;
+    mediaRef.current.muted = false;
     mediaRef.current.src = URL.createObjectURL(
       new Blob(blobs, { type: mimeType })
     );
@@ -41,6 +43,8 @@ export default function App() {
         audio: true,
         video: mimeType === videoType
       });
+      mediaRef.current.srcObject = streamRef.current;
+      mediaRef.current.muted = "muted";
       setHistory((prev) => [...prev, `Got Media Stream`]);
 
       mediaRecorderRef.current = new MediaRecorder(streamRef.current, {
