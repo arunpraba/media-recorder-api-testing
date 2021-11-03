@@ -24,7 +24,7 @@ const mediaRecordingSizes = {
   }
 }
 
-const initialHistory = [`Initialied...`];
+const initialHistory = [`Media console initialized...`];
 export const isSafari =
   navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1
 if (isSafari) {
@@ -45,7 +45,6 @@ export default function App() {
   const [recording, setIsRecording] = useState(false);
   const [videoSize, setVideoSize] = useState('xs')
   const [frameRate, setFrameRate] = useState(10)
-
 
   const preview = () => {
     setIsRecording(false);
