@@ -200,7 +200,7 @@ export default function App() {
           Download
         </button>
         <button className="stop" disabled={recording} onClick={() => setVideoElemMuted(prev => !prev)}>
-          {videoElemMuted ? 'Mute' : 'Un Mute'} Video Element
+          {videoElemMuted ? 'Un Mute' : 'Mute'} Video Element
         </button>
       </div>
 
