@@ -45,6 +45,7 @@ export default function App() {
   const [recording, setIsRecording] = useState(false);
   const [videoSize, setVideoSize] = useState('xs')
   const [frameRate, setFrameRate] = useState(10)
+  const [videoElemMuted, setVideoElemMuted] = useState(false)
 
   const preview = () => {
     setIsRecording(false);
@@ -198,10 +199,13 @@ export default function App() {
         <button className="stop" disabled={recording} onClick={download}>
           Download
         </button>
+        <button className="stop" disabled={recording} onClick={() => setVideoElemMuted(prev => !prev)}>
+          {videoElemMuted ? 'Mute' : 'Un Mute'} Video Element
+        </button>
       </div>
 
       {mimeType === videoType ? (
-        <video ref={mediaRef} controls autoPlay playsInline></video>
+        <video ref={mediaRef} controls autoPlay muted={videoElemMuted} playsInline></video>
       ) : (
         <div className="audio">
           <audio ref={mediaRef} controls autoPlay playsInline></audio>
