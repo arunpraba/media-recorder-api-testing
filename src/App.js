@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+
 import "./styles.css";
 
 let videoType = "video/webm";
@@ -8,25 +9,25 @@ let extension = "webm";
 const mediaRecordingSizes = {
   xs: {
     width: 640,
-    height: 480,
+    height: 480
   },
   sm: {
     width: 1024,
-    height: 576,
+    height: 576
   },
   md: {
     width: 1280,
-    height: 720,
+    height: 720
   },
   lg: {
     width: 1920,
-    height: 1080,
+    height: 1080
   }
-}
+};
+
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 const initialHistory = [`Media console initialized...`];
-export const isSafari =
-  navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1
 if (isSafari) {
   videoType = "video/mp4";
   audioType = "audio/mp4";
@@ -43,8 +44,9 @@ export default function App() {
   const [history, setHistory] = useState(initialHistory);
   const [mimeType, setMimeType] = useState(videoType);
   const [recording, setIsRecording] = useState(false);
-  const [videoSize, setVideoSize] = useState('xs')
-  const [frameRate, setFrameRate] = useState(10)
+  const [videoSize, setVideoSize] = useState("xs");
+  const [frameRate, setFrameRate] = useState(10);
+  const [timeSlice, setTimeSlice] = useState(5);
 
   const preview = () => {
     setIsRecording(false);
@@ -60,17 +62,17 @@ export default function App() {
 
   const startRecording = async () => {
     if (!frameRate || frameRate > 60 || frameRate < 5) {
-      alert(`Frame rate should be less that 60 and greater than 5`)
-      frameRateRef.current.focus()
-      return
+      alert(`Frame rate should be less that 60 and greater than 5`);
+      frameRateRef.current.focus();
+      return;
     }
     try {
       blobsRef.current = [];
       setIsRecording(true);
       setHistory((prev) => [...prev, `Video Started`]);
-      let video = false
+      let video = false;
       if (mimeType === videoType) {
-        video = { ...mediaRecordingSizes[videoSize], frameRate }
+        video = { ...mediaRecordingSizes[videoSize], frameRate };
       }
       streamRef.current = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -90,17 +92,18 @@ export default function App() {
       ]);
 
       mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data) {
+        console.log(`Size: ${event.data.size}`);
+        if (event.data.size > 0) {
           counterRef.current += 1;
           setHistory((prev) => [
             ...prev,
-            `Recorded...: ${counterRef.current}s`
+            `Recorded...: ${counterRef.current * timeSlice}s`
           ]);
           blobsRef.current.push(event.data);
         }
       };
       mediaRecorderRef.current.onstop = preview;
-      mediaRecorderRef.current.start(1000);
+      mediaRecorderRef.current.start(timeSlice * 1000);
     } catch (err) {
       setHistory((prev) => [...prev, err.message]);
     }
@@ -110,11 +113,11 @@ export default function App() {
     counterRef.current = 0;
     setIsRecording(false);
     setHistory((prev) => [...prev, `Stopped recording`]);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.stop) {
-      mediaRecorderRef.current.stop();
-    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.stop) {
+      mediaRecorderRef.current.stop();
     }
   };
 
@@ -127,7 +130,9 @@ export default function App() {
       `File Size: ${file.size}`
     ]);
     const url = window.URL.createObjectURL(file);
-    const name = `${mimeType.split("/")[0]}${mediaRecordingSizes[videoSize].height}p.${extension}`;
+    const name = `${mimeType.split("/")[0]}${
+      mediaRecordingSizes[videoSize].height
+    }p.${extension}`;
     const a = document.createElement("a");
     a.style = "display: none";
     a.href = url;
@@ -150,28 +155,53 @@ export default function App() {
     <div className="App">
       <h1>Media Record Testing</h1>
 
-      <div style={{ marginBottom: '20px' }}>
-        {
-          Object.keys(mediaRecordingSizes).map(value => {
-            return <span key={value} style={{ marginRight: '10px' }}>
-              <input id={value} name="videoSize"
-                onChange={e => {
-                  setVideoSize(e.target.value)
-                }} checked={videoSize === value} value={value} type="radio" />
+      <div style={{ marginBottom: "20px" }}>
+        {Object.keys(mediaRecordingSizes).map((value) => {
+          return (
+            <span key={value} style={{ marginRight: "10px" }}>
+              <input
+                id={value}
+                name="videoSize"
+                onChange={(e) => {
+                  setVideoSize(e.target.value);
+                }}
+                checked={videoSize === value}
+                value={value}
+                type="radio"
+              />
               <label htmlFor={value}>
-                {value.toUpperCase()} - {mediaRecordingSizes[value].width} X {mediaRecordingSizes[value].height}
+                {value.toUpperCase()} - {mediaRecordingSizes[value].width} X{" "}
+                {mediaRecordingSizes[value].height}
               </label>
             </span>
-          })
-        }
+          );
+        })}
       </div>
-      <div style={{ marginBottom: '20px' }}>
-        <label htmlFor="frameRate">
-          Frame Rate
-        </label>
-        <input id="frameRate" name="videoSize"
+      <div style={{ marginBottom: "20px" }}>
+        <label htmlFor="frameRate">Frame Rate</label>
+        <input
+          id="frameRate"
+          name="videoSize"
           ref={frameRateRef}
-          onChange={e => { setFrameRate(e.target.value) }} value={frameRate} type="number" />
+          onChange={(e) => {
+            setFrameRate(e.target.value);
+          }}
+          value={frameRate}
+          type="number"
+        />
+      </div>
+      <div style={{ marginBottom: "20px" }}>
+        <label htmlFor="timeSlice">Time Slice</label>
+        <input
+          id="timeSlice"
+          name="videoSize"
+          ref={frameRateRef}
+          onChange={(e) => {
+            setTimeSlice(e.target.value);
+          }}
+          value={timeSlice}
+          type="number"
+        />
       </div>
 
       <div>
