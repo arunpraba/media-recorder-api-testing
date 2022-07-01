@@ -82,3 +82,7 @@ li {
   background: transparent;
   border: 1px solid red;
 }
+
+.mb-20 {
+  margin-bottom: 20px;
+}

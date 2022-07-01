@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 
 import "./styles.css";
+import { useVad } from "./useVad";
 
 let videoType = "video/webm";
 let audioType = "audio/webm";
@@ -27,6 +28,7 @@ const mediaRecordingSizes = {
 
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
+const vadInitialState = "Voice activity is in idle";
 const initialHistory = [`Media console initialized...`];
 if (isSafari) {
   videoType = "video/mp4";
@@ -47,6 +49,15 @@ export default function App() {
   const [videoSize, setVideoSize] = useState("xs");
   const [frameRate, setFrameRate] = useState(10);
   const [timeSlice, setTimeSlice] = useState(5);
+  const startTimeRef = useRef(0);
+  const endTimeRef = useRef(0);
+  
+
+  const [recorderTime, setRecorderTime] = useState(0);
+  const [voiceActivityMessage, setVoiceActivityMessage] = useState(
+    vadInitialState
+  );
+  const { start, stop } = useVad();
 
   const preview = () => {
     setIsRecording(false);
@@ -104,6 +115,26 @@ export default function App() {
       };
       mediaRecorderRef.current.onstop = preview;
       mediaRecorderRef.current.start(timeSlice * 1000);
+      mediaRef.current.ontimeupdate = () => {
+        if (!startTimeRef.current) {
+          startTimeRef.current = mediaRef.current.currentTime;
+        }
+      };
+      start({
+        stream: streamRef.current,
+        onUpdate(value) {
+          setVoiceActivityMessage(`Current voice activity value ${value}`);
+          console.log("Hello onUpdate");
+        },
+        onVoiceStart() {
+          setVoiceActivityMessage(`Voice activity started`);
+          console.log("Hello onVoiceStart");
+        },
+        onVoiceStop() {
+          setVoiceActivityMessage(`Voice activity stopped`);
+          console.log("Hello onVoiceStop");
+        }
+      });
     } catch (err) {
       setHistory((prev) => [...prev, err.message]);
     }
@@ -116,9 +147,15 @@ export default function App() {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
     }
+    if (!endTimeRef.current) {
+      endTimeRef.current = mediaRef.current.currentTime;
+    }
+    const diff = Math.trunc(endTimeRef.current - startTimeRef.current);
+    setRecorderTime(diff);
     if (mediaRecorderRef.current && mediaRecorderRef.current.stop) {
       mediaRecorderRef.current.stop();
     }
+    stop();
   };
 
   const download = () => {
@@ -151,11 +188,17 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    startTimeRef.current = 0;
+    endTimeRef.current = 0;
+    setVoiceActivityMessage(vadInitialState);
+  }, [mimeType]);
+
   return (
     <div className="App">
       <h1>Media Record Testing</h1>
 
-      <div style={{ marginBottom: "20px" }}>
+      <div className="mb-20">
         {Object.keys(mediaRecordingSizes).map((value) => {
           return (
             <span key={value} style={{ marginRight: "10px" }}>
@@ -177,7 +220,7 @@ export default function App() {
           );
         })}
       </div>
-      <div style={{ marginBottom: "20px" }}>
+      <div className="mb-20">
         <label htmlFor="frameRate">Frame Rate</label>
         <input
           id="frameRate"
@@ -190,7 +233,7 @@ export default function App() {
           type="number"
         />
       </div>
-      <div style={{ marginBottom: "20px" }}>
+      <div className="mb-20">
         <label htmlFor="timeSlice">Time Slice</label>
         <input
           id="timeSlice"
@@ -203,7 +246,13 @@ export default function App() {
           type="number"
         />
       </div>
+      <div className="mb-20">
+        <div>Recordered Time: {recorderTime}s</div>
+      </div>
 
+      <div className="mb-20">
+        <div>{voiceActivityMessage}</div>
+      </div>
       <div>
         <button
           className={mimeType === videoType ? "active-button" : ""}
